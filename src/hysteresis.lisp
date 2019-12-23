@@ -7,7 +7,7 @@
 (defstruct entry
   id value)
 
-(defstruct hystorized-symbol
+(defstruct historized-symbol
   (name nil :type symbol)
   (history nil :type history))
 
