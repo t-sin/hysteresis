@@ -20,11 +20,10 @@
 
 (defun add-history-entry (hsym value)
   (if (null (historized-symbol-history hsym))
-      (setf (historized-symbol-history hsym)
-            (make-array 1 :fill-pointer 0 :adjustable t
-                        :initial-contents (list (make-entry* value))))
-      (vector-push-extend (make-entry* value) (historized-symbol-history hsym))))
-      
+      (let ((history (make-history* *history-length*)))
+        (setf (historized-symbol-history hsym) history)
+        (add-entry (make-entry* value) history))
+      (add-entry (make-entry* value) (historized-symbol-history hsym))))
 
 
 (defun set-value (name value &optional (history *history*))
