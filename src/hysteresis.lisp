@@ -25,6 +25,9 @@
         (add-entry (make-entry* value) history))
       (add-entry (make-entry* value) (historized-symbol-history hsym))))
 
+(defun revert-history (n hsym)
+  )
+
 
 (defun set-value (name value &optional (history *history*))
   )
