@@ -16,6 +16,7 @@
   (head 0 :type number)
   (tail 0 :type number)
   (now 0 :type number)
+  (now-modified? nil)
   (vector nil :type simple-vector))
 
 (defun make-history* (&optional vec (len *maximum-history-length*))
@@ -32,10 +33,14 @@
     (if (= (mod (1+ (history-head history)) len)
            (history-tail history))
         (progn
+          (unless (history-now-modified? history)
+            (setf (history-now history) (history-head history)))
           (setf (aref (history-vector history) (history-head history)) entry)
           (setf (history-head history) (mod (1+ (history-head history)) len))
           (setf (history-tail history) (mod (1+ (history-tail history)) len)))
         (progn
+          (unless (history-now-modified? history)
+            (setf (history-now history) (history-head history)))
           (setf (aref (history-vector history) (history-head history)) entry)
           (setf (history-head history) (mod (1+ (history-head history)) len))))))
 
@@ -54,10 +59,16 @@
     (aref (history-vector history)
           (mod (- (history-head history) (1+ n)) (length (history-vector history))))))
 
-(defun entry-at-now (history)
+(defun entry-at-present (history)
   (elt (history-vector history) (history-now history)))
 
-(defun move-on (history n)
+(defun move-to-present (history)
+  (setf (history-now-modified? history) nil)
+  (let ((len (length (history-vector history))))
+    (setf (history-now history) (mod (1- (history-head history)) len))))
+
+(defun move-to (n history)
+  (setf (history-now-modified? history) t)
   (let ((now (history-now history)))
     (cond ((plusp n)
            (when (> (+ now n) (history-head history))
