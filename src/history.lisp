@@ -27,13 +27,16 @@
 
 (defun add-entry (entry history)
   (let ((len (length (history-vector history))))
+    ;; if head catches up with tail in ring buffer
     (if (= (mod (1+ (history-head history)) len)
            (history-tail history))
-        (setf (aref (history-vector history) (history-head history)) entry
-              (history-head history) (mod (1+ (history-head history)) len)
-              (history-tail history) (mod (1+ (history-tail history)) len))
-        (setf (aref (history-vector history) (history-head history)) entry
-              (history-head history) (mod (1+ (history-head history)) len)))))
+        (progn
+          (setf (aref (history-vector history) (history-head history)) entry)
+          (setf (history-head history) (mod (1+ (history-head history)) len))
+          (setf (history-tail history) (mod (1+ (history-tail history)) len)))
+        (progn
+          (setf (aref (history-vector history) (history-head history)) entry)
+          (setf (history-head history) (mod (1+ (history-head history)) len))))))
 
 (defun drop-entry (history)
   (let ((len (length (history-vector history))))
