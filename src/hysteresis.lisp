@@ -4,6 +4,9 @@
   (:export))
 (in-package #:hysteresis)
 
+(defparameter *entry-count* 0)
+(defparameter *history-length* 10)
+
 (defstruct entry
   id value)
 
@@ -23,7 +26,6 @@
       (vector-push-extend (make-entry* value) (historized-symbol-history hsym))))
       
 
-(defparameter *history-length* 10)
 (defparameter *history* (make-hash-table))
 
 (defun set-value (name value &optional (history *history*))
