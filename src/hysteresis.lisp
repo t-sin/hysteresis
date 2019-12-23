@@ -26,7 +26,6 @@
       (vector-push-extend (make-entry* value) (historized-symbol-history hsym))))
       
 
-(defparameter *history* (make-hash-table))
 
 (defun set-value (name value &optional (history *history*))
   )
