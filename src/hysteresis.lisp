@@ -28,6 +28,7 @@
 (defun revert-history (n hsym)
   )
 
+(defparameter *symbols* (make-hash-table))
 
 (defun set-value (name value &optional (history *history*))
   )
