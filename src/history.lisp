@@ -5,8 +5,8 @@
            #:history-head
            #:history-tail
            #:history-vector
-           #:push-entry
-           #:pop-entry
+           #:add-entry
+           #:drop-entry
            #:entry-at))
 (in-package #:hysteresis.history)
 
@@ -25,7 +25,7 @@
         (make-history :head (length vec) :tail 0
                       :vector (make-array len :initial-contents initvec)))))
 
-(defun push-entry (entry history)
+(defun add-entry (entry history)
   (let ((len (length (history-vector history))))
     (if (= (mod (1+ (history-head history)) len)
            (history-tail history))
@@ -35,7 +35,7 @@
         (setf (aref (history-vector history) (history-head history)) entry
               (history-head history) (mod (1+ (history-head history)) len)))))
 
-(defun pop-entry (history)
+(defun drop-entry (history)
   (let ((len (length (history-vector history))))
     (if (= (history-head history) (history-tail history))
         (if (null (aref (history-vector history) (history-head history)))
