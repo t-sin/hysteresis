@@ -3,4 +3,7 @@
   :version "0.1.0"
   :author "TANAKA Shinichi <shinichi.tanaka45@gmail.com>"
   :license "MIT"
-  :components ((:file "hysteresis")))
+  :components ((:module "src"
+                :serial t
+                :components ((:file "history")
+                             (:file "hysteresis")))))

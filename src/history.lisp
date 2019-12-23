@@ -1,7 +1,14 @@
-(defpackage #:hysteresis
+(defpackage #:hysteresis.history
   (:use #:cl)
-  (:export))
-(in-package #:hysteresis)
+  (:export #:history
+           #:make-history*
+           #:history-head
+           #:history-tail
+           #:history-vector
+           #:push-entry
+           #:pop-entry
+           #:entry-at))
+(in-package #:hysteresis.history)
 
 (defparameter *maximum-history-length* 10)
 
@@ -42,31 +49,3 @@
   (when (not (= (history-head history) (history-tail history)))
     (aref (history-vector history)
           (mod (- (history-head history) (1+ n)) (length (history-vector history))))))
-
-(defstruct entry
-  id value)
-
-(defstruct hystorized-symbol
-  (name nil :type symbol)
-  (history nil :type history))
-
-(defun make-entry* (value)
-  (prog1 (make-entry :id *entry-count* :value value)
-    (incf *entry-count*)))
-
-(defun add-history-entry (hsym value)
-  (if (null (historized-symbol-history hsym))
-      (setf (historized-symbol-history hsym)
-            (make-array 1 :fill-pointer 0 :adjustable t
-                        :initial-contents (list (make-entry* value))))
-      (vector-push-extend (make-entry* value) (historized-symbol-history hsym))))
-      
-
-(defparameter *history-length* 10)
-(defparameter *history* (make-hash-table))
-
-(defun set-value (name value &optional (history *history*))
-  )
-
-(defmacro hdefun (&rest &key args)
-  )
