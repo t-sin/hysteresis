@@ -15,6 +15,7 @@
 (defstruct history
   (head 0 :type number)
   (tail 0 :type number)
+  (now 0 :type number)
   (vector nil :type simple-vector))
 
 (defun make-history* (&optional vec (len *maximum-history-length*))
@@ -22,7 +23,7 @@
       (make-history :vector (make-array len :initial-element nil))
       (let ((initvec (concatenate 'vector vec (make-array (- len (length vec))
                                                           :initial-element nil))))
-        (make-history :head (length vec) :tail 0
+        (make-history :head (length vec) :tail 0 :now (length vec)
                       :vector (make-array len :initial-contents initvec)))))
 
 (defun add-entry (entry history)
@@ -52,3 +53,16 @@
   (when (not (= (history-head history) (history-tail history)))
     (aref (history-vector history)
           (mod (- (history-head history) (1+ n)) (length (history-vector history))))))
+
+(defun entry-at-now (history)
+  (elt (history-vector history) (history-now history)))
+
+(defun move-on (history n)
+  (let ((now (history-now history)))
+    (cond ((plusp n)
+           (when (> (+ now n) (history-head history))
+             (error "too large n (~a); it's future." n)))
+          ((minusp n)
+           (when (< (+ now n) (history-tail history))
+             (error "too small n (~a); it's gone in the past." n))))
+    (setf (history-now history) (+ now n))))
