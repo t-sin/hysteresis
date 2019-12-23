@@ -7,7 +7,10 @@
            #:history-vector
            #:add-entry
            #:drop-entry
-           #:entry-at))
+           #:entry-at
+           #:entry-at-present
+           #:move-to-present
+           #:move-to))
 (in-package #:hysteresis.history)
 
 (defparameter *maximum-history-length* 10)
