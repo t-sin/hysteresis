@@ -25,13 +25,45 @@
         (add-entry (make-entry* value) history))
       (add-entry (make-entry* value) (historized-symbol-history hsym))))
 
-(defun revert-history (n hsym)
-  )
-
 (defparameter *symbols* (make-hash-table))
 
-(defun set-value (name value &optional (history *history*))
-  )
+;;; exposed API
+
+(defun set-value (name value)
+  (multiple-value-bind (hsym exists?)
+      (gethash name *symbols*)
+    (if (null exists?)
+        (let ((hsym (make-historized-symbol :name name :history (make-history*))))
+          (setf (gethash name *symbols*) hsym)
+          (prog1 value
+            (add-history-entry hsym value)))
+        (prog1 value
+            (add-history-entry hsym value)))))
+
+(defun get-value (name)
+  (let ((hsym (gethash name *symbols*)))
+    (if (null hsym)
+        nil
+        (let ((present-value (entry-at-present (historized-symbol-history hsym))))
+          (entry-value present-value)))))
+
+(defun present (&optional name)
+  (if (null name)
+      (maphash (lambda (_ hsym)
+                 (declare (ignore _))
+                 (move-to-present (historized-symbol-history hsym)))
+               *symbols*)
+      (move-to-present (historized-symbol-history (gethash name *symbols*)))))
+
+(defun revert (n &optional name)
+  (if (null name)
+      (maphash (lambda (_ hsym)
+                 (declare (ignore _))
+                 (move-to n (historized-symbol-history hsym)))
+               *symbols*)
+      (move-to n (historized-symbol-history (gethash name *symbols*)))))
+
+;;; interface macros for user
 
 (defmacro hdefun (&rest args)
   )
