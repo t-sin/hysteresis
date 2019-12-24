@@ -35,10 +35,12 @@
     (if (null exists?)
         (let ((hsym (make-historized-symbol :name name :history (make-history*))))
           (setf (gethash name *symbols*) hsym)
-          (prog1 (values value hsym)
-            (add-history-entry hsym type value)))
-        (prog1 (values value hsym)
-            (add-history-entry hsym type value)))))
+          (progn
+            (add-history-entry hsym type value)
+            (values value hsym)))
+        (progn
+          (add-history-entry hsym type value)
+          (values value hsym)))))
 
 (defun get-value (name &optional (type :value))
   (let ((hsym (gethash name *symbols*)))
