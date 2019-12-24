@@ -5,7 +5,9 @@
            #:get-value
            #:present
            #:revert
-           #:hdefun))
+           #:hdefun
+           #:enable-hysteresis-reader
+           #:disable-hysteresis-reader))
 (in-package #:hysteresis)
 
 (defparameter *entry-count* 0)
