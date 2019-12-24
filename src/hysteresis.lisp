@@ -69,12 +69,13 @@
       (move-to-present (historized-symbol-history (gethash name *symbols*)))))
 
 (defun revert (n &optional name)
-  (if (null name)
-      (maphash (lambda (_ hsym)
-                 (declare (ignore _))
-                 (move-to n (historized-symbol-history hsym)))
-               *symbols*)
-      (move-to n (historized-symbol-history (gethash name *symbols*)))))
+  (let ((n* (- n)))
+    (if (null name)
+        (maphash (lambda (_ hsym)
+                   (declare (ignore _))
+                   (move-to n* (historized-symbol-history hsym)))
+                 *symbols*)
+        (move-to n* (historized-symbol-history (gethash name *symbols*))))))
 
 ;;; interface macros for user
 
