@@ -67,5 +67,14 @@
 
 ;;; interface macros for user
 
-(defmacro hdefun (&rest args)
-  )
+(defmacro hdefun (name (&rest args) &body body)
+  (let (($fn (gensym))
+        ($value (gensym))
+        ($hsym (gensym)))
+    `(multiple-value-bind (,$value ,$hsym)
+         (set-value ',name #'(lambda (,@args) ,@body) :function)
+       (declare (ignore ,$value))
+       (setf (symbol-function ,name)
+             (lambda (,@args)
+               (let ((,$entry (entry-at-present (historized-symbol-history ,$hsym))))
+                 (apply (entry-function ,$entry) `(,,@args))))))))
