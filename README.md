@@ -8,4 +8,4 @@
 
 ## License
 
-MIT?
+*Hysteresis* is licensed unther the MIT license.
