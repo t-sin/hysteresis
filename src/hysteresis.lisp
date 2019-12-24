@@ -1,7 +1,11 @@
 (defpackage #:hysteresis
   (:use #:cl
         #:hysteresis.history)
-  (:export))
+  (:export #:set-value
+           #:get-value
+           #:present
+           #:revert
+           #:hdefun))
 (in-package #:hysteresis)
 
 (defparameter *entry-count* 0)
