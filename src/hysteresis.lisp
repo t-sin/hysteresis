@@ -55,6 +55,9 @@
             (:value (entry-value present-entry))
             (:function (entry-function present-entry)))))))
 
+(defun (setf get-value) (value name)
+  (prog1 (set-value name value)))
+
 (defun present (&optional name)
   (if (null name)
       (maphash (lambda (_ hsym)
@@ -84,3 +87,18 @@
              (lambda ,lambda-list
                (let ((,$entry (entry-at-present (historized-symbol-history ,$hsym))))
                  (apply (entry-function ,$entry) (list ,@lambda-list))))))))
+
+(defun hsymbol-reader (stream ch)
+  (declare (ignore ch))
+  (let ((name (read stream)))
+    `(get-value ',name)))
+
+(let ((readtable))
+  (defun enable-hysteresis-reader ()
+    (let ((rt (copy-readtable *readtable*)))
+      (setf readtable *readtable*)
+      (setf *readtable* rt))
+      (set-macro-character #\@ #'hsymbol-reader))
+
+  (defun disable-hysteresis-reader ()
+    (setf *readtable* readtable)))
