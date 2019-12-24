@@ -9,7 +9,7 @@
 (in-package #:hysteresis)
 
 (defparameter *entry-count* 0)
-(defparameter *history-length* 10)
+(defparameter *history-length* 30)
 
 (defstruct entry
   id value function)
