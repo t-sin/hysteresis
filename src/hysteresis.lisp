@@ -8,44 +8,46 @@
 (defparameter *history-length* 10)
 
 (defstruct entry
-  id value)
+  id value function)
 
 (defstruct historized-symbol
   (name nil :type symbol)
   (history nil :type history))
 
-(defun make-entry* (value)
-  (prog1 (make-entry :id *entry-count* :value value)
+(defun make-entry* (obj &optional (type :value))
+  (prog1 (make-entry :id *entry-count* type obj)
     (incf *entry-count*)))
 
-(defun add-history-entry (hsym value)
+(defun add-history-entry (hsym type value)
   (if (null (historized-symbol-history hsym))
       (let ((history (make-history* *history-length*)))
         (setf (historized-symbol-history hsym) history)
-        (add-entry (make-entry* value) history))
-      (add-entry (make-entry* value) (historized-symbol-history hsym))))
+        (add-entry (make-entry* value type) history))
+      (add-entry (make-entry* value type) (historized-symbol-history hsym))))
 
 (defparameter *symbols* (make-hash-table))
 
 ;;; exposed API
 
-(defun set-value (name value)
+(defun set-value (name value &optional (type :value))
   (multiple-value-bind (hsym exists?)
       (gethash name *symbols*)
     (if (null exists?)
         (let ((hsym (make-historized-symbol :name name :history (make-history*))))
           (setf (gethash name *symbols*) hsym)
-          (prog1 value
-            (add-history-entry hsym value)))
-        (prog1 value
-            (add-history-entry hsym value)))))
+          (prog1 (values value hsym)
+            (add-history-entry hsym type value)))
+        (prog1 (values value hsym)
+            (add-history-entry hsym type value)))))
 
-(defun get-value (name)
+(defun get-value (name &optional (type :value))
   (let ((hsym (gethash name *symbols*)))
     (if (null hsym)
         nil
-        (let ((present-value (entry-at-present (historized-symbol-history hsym))))
-          (entry-value present-value)))))
+        (let ((present-entry (entry-at-present (historized-symbol-history hsym))))
+          (ecase type
+            (:value (entry-value present-entry))
+            (:function (entry-function present-entry)))))))
 
 (defun present (&optional name)
   (if (null name)
