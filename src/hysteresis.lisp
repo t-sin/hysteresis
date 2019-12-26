@@ -6,8 +6,7 @@
            #:present
            #:revert
            #:hdefun
-           #:enable-hysteresis-reader
-           #:disable-hysteresis-reader))
+           #:hsetq))
 (in-package #:hysteresis)
 
 (defparameter *entry-count* 0)
@@ -91,17 +90,7 @@
                (let ((,$entry (entry-at-present (historized-symbol-history ,$hsym))))
                  (apply (entry-function ,$entry) (list ,@lambda-list))))))))
 
-(defun hsymbol-reader (stream ch)
-  (declare (ignore ch))
-  (let ((name (read stream)))
-    `(get-value ',name)))
-
-(let ((readtable))
-  (defun enable-hysteresis-reader ()
-    (let ((rt (copy-readtable *readtable*)))
-      (setf readtable *readtable*)
-      (setf *readtable* rt))
-      (set-macro-character #\@ #'hsymbol-reader))
-
-  (defun disable-hysteresis-reader ()
-    (setf *readtable* readtable)))
+(defmacro hsetq (name value)
+  `(progn
+    (define-symbol-macro ,name (get-value ',name))
+    (setf (get-value ',name) ,value)))
