@@ -35,18 +35,16 @@ CL-USER> (hysteresis:get-value 'foo)
 42
 ```
 
-Yeah it's complicated way, I think so. So I wrote a reader macro for accessing value slot of *hystorized symbols*. To enable it, call this function:
+However it's complicated way. So I wrote a macro for accessing value slot of *hystorized symbols*. It defines symbol macro for specified name. When you remove this symbol macro, just `unintern` that symbol.
 
 ```lisp
-CL-USER> (hysteresis:enable-hysteresis-reader)
-T
-CL-USER> (setf @hoge 42)
+CL-USER> (hysteresis:hsetq hoge 42)
 42
-CL-USER> @hoge
+CL-USER> (setf hoge 42)
+42
+CL-USER> hoge
 42
 ```
-
-If you can disable this reader, call `hysteresis:disable-hysteresis-reader`.
 
 ### Get back the values at the past point
 
